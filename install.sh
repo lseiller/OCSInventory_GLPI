@@ -75,7 +75,7 @@ os_check(){
             exit 2
         fi
     elif [ "$lsb_dist" = "ubuntu" ]; then
-        if [ "$dist_version" != "20.10" ] || [ "$dist_version" = "20.04" ];; then
+        if [ "$dist_version" != "20.10" ] || [ "$dist_version" = "20.04" ]; then
             warn "Votre système n'est pas compatible"
             output ""
             output "OS Supporté :"
