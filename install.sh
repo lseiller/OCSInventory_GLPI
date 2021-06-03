@@ -57,19 +57,32 @@ os_check(){
     if [ -r /etc/os-release ]; then
         lsb_dist="$(. /etc/os-release && echo "$ID")"
         dist_version="$(. /etc/os-release && echo "$VERSION_ID")"
+        info "Votre OS : ${lsb_dist} ${dist_version}"
     else
         warn "Erreur lors de la vérification de l'OS"
         exit 1
     fi
 
     if [ "$lsb_dist" = "debian" ]; then
-        if [ "$dist_version" != "10" ]; then
-            warn "Seulement Debian 10 est supporté"
+        if [ "$dist_version" != "10" ] || [ "$dist_version" = "9" ]; then
+            warn "Votre système n'est pas compatible"
+            output ""
+            output "OS Supporté :"
+            output "Debian 10"
+            output "Debian 9"
+            output "Ubuntu 20.10"
+            output "Ubuntu 20.04"
             exit 2
         fi
     elif [ "$lsb_dist" = "ubuntu" ]; then
-        if [ "$dist_version" != "20.10" ]; then
-            warn "Seulement Ubuntu 20.10 est supporté"
+        if [ "$dist_version" != "20.10" ] || [ "$dist_version" = "20.04" ];; then
+            warn "Votre système n'est pas compatible"
+            output ""
+            output "OS Supporté :"
+            output "Debian 10"
+            output "Debian 9"
+            output "Ubuntu 20.10"
+            output "Ubuntu 20.04"
             exit 2
         fi
     else
@@ -77,7 +90,9 @@ os_check(){
         output ""
         output "OS Supporté :"
         output "Debian 10"
+        output "Debian 9"
         output "Ubuntu 20.10"
+        output "Ubuntu 20.04"
         exit 2
     fi
 }
@@ -210,7 +225,8 @@ broadcast_ocs(){
     output "Password: $ocs_password"
     output ""
     output "Interface web d'OCS :"
-    output "http://IPDUSERVER/ocsreports"
+    ip4=$(/sbin/ip -o -4 addr list eth0 | awk '{print $4}' | cut -d/ -f1)
+    output "http://${ip4}/ocsreports"
     output "Par défaut les identifiants :"
     output "User: admin"
     output "Password: admin"
