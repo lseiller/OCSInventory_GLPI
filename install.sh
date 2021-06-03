@@ -28,8 +28,8 @@ notsupported(){
 
 preinstall(){
     clear
-    output "Ce script permet l'installation d'OCSInventory et GLPI."
-    output "Il est préférable d'utiliser ce script sur une installation récente."
+    output "GITHUB : "
+    output "https://github.com/Lowan-S/OCSInventory_GLPI"
 
     os_check
 
@@ -91,7 +91,7 @@ os_check(){
             notsupported
         fi
     elif [ "$lsb_dist" = "ubuntu" ]; then
-        if [ "$dist_version" != "20.10" ] && [ "$dist_version" != "20.04" ] && [ "$dist_version" != "19.10" ]; then
+        if [ "$dist_version" != "20.10" ] && [ "$dist_version" != "20.04" ] && [ "$dist_version" != "19.10" ] && [ "$dist_version" != "18.04" ]; then
             notsupported
         fi
     else
@@ -171,7 +171,7 @@ ocs_install(){
     if [ "$lsb_dist" = "ubuntu" ] || [ "$lsb_dist" = "debian" ]; then
         mkdir /opt/ocs
         wget https://github.com/OCSInventory-NG/OCSInventory-ocsreports/releases/download/${OCSVERSION}/OCSNG_UNIX_SERVER-${OCSVERSION}.tar.gz -P /opt/ocs
-        tar -xvf /opt/ocs/OCSNG_UNIX_SERVER-${OCSVERSION}.tar.gz
+        tar -xf /opt/ocs/OCSNG_UNIX_SERVER-${OCSVERSION}.tar.gz
         cp ./OCSNG_UNIX_SERVER-${OCSVERSION}/ /opt/ocs -r && rm ./OCSNG_UNIX_SERVER-${OCSVERSION}/ -R
         chmod +x /opt/ocs/OCSNG_UNIX_SERVER-${OCSVERSION}/setup.sh
         warn "\nDémarrage de l'installation OCS, vous allez indiquer les configurations d'ocs lors des étapes suivantes.${NC}"
@@ -207,7 +207,6 @@ ocs_mysql(){
 }
 
 ocs_setup(){
-    output "\nInstallation d'OCS..."
     ocs_dependencies
     ocs_install
     ocs_webconfig
