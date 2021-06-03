@@ -14,6 +14,18 @@ info(){
     echo '\e[33m'$1'\e1'
 }
 
+notsupported(){
+        output "Votre système n'est pas compatible"
+        output ""
+        output "OS Supporté :"
+        output "Debian 10"
+        output "Debian 9"
+        output "Ubuntu 20.10"
+        output "Ubuntu 20.04"
+        output "Ubuntu 19.10"
+        exit 2
+}
+
 preinstall(){
     clear
     output "Ce script permet l'installation d'OCSInventory et GLPI."
@@ -65,35 +77,14 @@ os_check(){
 
     if [ "$lsb_dist" = "debian" ]; then
         if [ "$dist_version" != "10" ] && [ "$dist_version" != "9" ]; then
-            warn "Votre système n'est pas compatible"
-            output ""
-            output "OS Supporté :"
-            output "Debian 10"
-            output "Debian 9"
-            output "Ubuntu 20.10"
-            output "Ubuntu 20.04"
-            exit 2
+            notsupported
         fi
     elif [ "$lsb_dist" = "ubuntu" ]; then
-        if [ "$dist_version" != "20.10" ] && [ "$dist_version" != "20.04" ]; then
-            warn "Votre système n'est pas compatible"
-            output ""
-            output "OS Supporté :"
-            output "Debian 10"
-            output "Debian 9"
-            output "Ubuntu 20.10"
-            output "Ubuntu 20.04"
-            exit 2
+        if [ "$dist_version" != "20.10" ] && [ "$dist_version" != "20.04" ] && [ "$dist_version" != "19.10" ] ; then
+            notsupported
         fi
     else
-        output "Votre système n'est pas supporté pour l'instant."
-        output ""
-        output "OS Supporté :"
-        output "Debian 10"
-        output "Debian 9"
-        output "Ubuntu 20.10"
-        output "Ubuntu 20.04"
-        exit 2
+        notsupported
     fi
 }
 
@@ -182,6 +173,7 @@ ocs_install(){
 ocs_webconfig(){
     if [ "$lsb_dist" = "ubuntu" ] || [ "$lsb_dist" = "debian" ]; then
         cp /etc/apache2/conf-available/ocsinventory-reports.conf /etc/apache2/sites-enabled/
+        chmod 755 /usr/share/ocsinventory-reports/ocsreports/logs/
         systemctl reload apache2
     fi
 }
