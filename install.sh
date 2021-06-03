@@ -41,16 +41,18 @@ preinstall(){
     output "\nC'est partit !"
 
     if [ "$lsb_dist" = "debian" ]; then
+        dpkg --configure -a
         apt update --fix-missing && apt upgrade -y
         apt-get -y install software-properties-common virt-what wget sudo
     elif [ "$lsb_dist" = "ubuntu" ]; then
-        apt update --fix-missing && apt upgrade -y
-        apt-get -y install software-properties-common virt-what wget
         if [ "$dist_version" = "19.10" ]; then
             sudo sed -i -e 's/archive.ubuntu.com\|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list || sed -i -e 's/archive.ubuntu.com\|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list
             grep -E 'archive.ubuntu.com|security.ubuntu.com' /etc/apt/sources.list.d/*
-            sudo apt-get update || apt-get update
+            sudo apt-get update -y || apt-get update -y
         fi
+        dpkg --configure -a
+        apt update --fix-missing && apt upgrade -y
+        apt-get -y install software-properties-common virt-what wget
     fi
 
     virt_serv=$(echo $(virt-what))
