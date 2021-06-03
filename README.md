@@ -11,7 +11,7 @@ Si vous rencontrez un problème ou que vous avez une suggestion ou que vous voul
 | Ubuntu            | 20.10   | :heavy_check_mark:   | :heavy_check_mark: |                                      |
 |                   | 20.04   | :heavy_check_mark:   | :red_circle:       | Non testé                            |
 | Debian            | 10      | :heavy_check_mark:   | :heavy_check_mark: |                                      |
-|                   | 9       | :heavy_check_mark:   | :red_circle:       |                                      |
+|                   | 9       | :red_circle:         | :red_circle:       | Not working see [bug #1](https://github.com/Lowan-S/OCSInventory_GLPI/issues/1)               |
 | CentOS            | x       | :red_circle:         | :red_circle:       | ToDO                                 |
 | RHEL              | x       | :red_circle:         | :red_circle:       | ToDO                                 |
 | Fedora            | x       | :red_circle:         | :red_circle:       | ToDO                                 |
