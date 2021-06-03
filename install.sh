@@ -46,10 +46,19 @@ preinstall(){
     elif [ "$lsb_dist" = "ubuntu" ]; then
         apt update --fix-missing && apt upgrade -y
         apt-get -y install software-properties-common virt-what wget
+        if [ "$dist_version" = "19.10" ]; then
+            sudo sed -i -e 's/archive.ubuntu.com\|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list || sed -i -e 's/archive.ubuntu.com\|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list
+            grep -E 'archive.ubuntu.com|security.ubuntu.com' /etc/apt/sources.list.d/*
+            sudo apt-get update || apt-get update
+        fi
     fi
 
     virt_serv=$(echo $(virt-what))
-    output "Votre environnement est '$virt_serv'.\nOCSInventory et GLPI peuvent s'exécuter dans un environnement virtuel."
+    if [ "$virt_serv" = "" ]; then
+        output "Votre environnement n'est pas virtualisé."
+    else
+        output "Votre environnement est '$virt_serv'.\nOCSInventory et GLPI peuvent s'exécuter dans un environnement virtuel."
+    fi
     output "Voulez vous continuer ?\n[1] Oui.\n[2] Non."
     read choix
     case $choix in
@@ -80,7 +89,7 @@ os_check(){
             notsupported
         fi
     elif [ "$lsb_dist" = "ubuntu" ]; then
-        if [ "$dist_version" != "20.10" ] && [ "$dist_version" != "20.04" ] && [ "$dist_version" != "19.10" ] ; then
+        if [ "$dist_version" != "20.10" ] && [ "$dist_version" != "20.04" ] && [ "$dist_version" != "19.10" ]; then
             notsupported
         fi
     else
