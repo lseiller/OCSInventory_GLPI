@@ -41,14 +41,34 @@ preinstall(){
     output "\nC'est partit !"
 
     if [ "$lsb_dist" = "debian" ]; then
+        if [ "$dist_version" = "9" ]; then
+            warn "Vous êtes sur Debian 9, cette version n'est pas recommandé.\nVoulez-vous quand même procéder ?\n[1]Oui.\n[2]Non."
+            read choix
+            case $choix in
+                1 ) output "On continue !"
+                    ;;
+                2 ) output "Arrêt du script"
+                    exit 7
+                    ;;
+            esac
+        fi
         dpkg --configure -a
         apt update --fix-missing && apt upgrade -y
         apt-get -y install software-properties-common virt-what wget sudo
     elif [ "$lsb_dist" = "ubuntu" ]; then
-        if [ "$dist_version" = "19.10" ]; then
+        if [ "$dist_version" = "18.04" ]; then
+            warn "Vous êtes sur Ubuntu 18.04, cette version n'est pas recommandé.\nVoulez-vous quand même procéder ?\n[1]Oui.\n[2]Non."
+            read choix
+            case $choix in
+                1 ) output "On continue !"
+                    ;;
+                2 ) output "Arrêt du script"
+                    exit 7
+                    ;;
+            esac
+        elif [ "$dist_version" = "19.10" ]; then
             sudo sed -i -e 's/archive.ubuntu.com\|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list || sed -i -e 's/archive.ubuntu.com\|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list
             grep -E 'archive.ubuntu.com|security.ubuntu.com' /etc/apt/sources.list.d/*
-            sudo apt-get update -y || apt-get update -y
         fi
         dpkg --configure -a
         apt update --fix-missing && apt upgrade -y
@@ -67,10 +87,10 @@ preinstall(){
         1)  output "Lancement....\n\n"
             ;;
         2)  output "Installation annulé."
-            exit 7
+            exit 8
             ;;
         *)  info "Aucune option choisie"
-            exit 7
+            exit 8
             ;;
     esac
 
@@ -161,11 +181,12 @@ ocs_dependencies(){
     output "\nInstallation de perl"
     sleep .5
     if [ "$lsb_dist" = "ubuntu" ] || [ "$lsb_dist" = "debian" ]; then
-        if [ "$dist_version" = "9" ] || [ "$lsb_version" = "18.04" ]; then
-            apt-get source apache2
-        fi
         apt install -y perl6 libxml-simple-perl libdbi-perl libdbd-mysql-perl libapache-dbi-perl libnet-ip-perl libsoap-lite-perl libarchive-zip-perl
-        cpan XML::Simple Compress::Zlib DBI DBD::mysql Apache::DBI Net::IP SOAP::Lite Mojolicious::Lite Plack::Handler Archive::Zip YAML XML::Entities Switch
+        if [ "$dist_version" = "9" ] || [ "$dist_version" = "18.04" ]; then
+            cpan XML::Simple Compress::Zlib DBI DBD::mysql Apache::DBI Net::IP Mojolicious::Lite Plack::Handler Archive::Zip YAML XML::Entities Switch
+        else
+            cpan XML::Simple Compress::Zlib DBI DBD::mysql Apache::DBI Net::IP SOAP::Lite Mojolicious::Lite Plack::Handler Archive::Zip YAML XML::Entities Switch
+        fi
     fi
 
 }
