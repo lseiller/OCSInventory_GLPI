@@ -1,6 +1,6 @@
 #!/bin/bash
 OCSVERSION=2.9
-GLPIVERSION=0
+GLPIVERSION=9.5.5
 
 output(){
     echo '\e[36m'$1'\e[0m';
@@ -161,6 +161,9 @@ ocs_dependencies(){
     output "\nInstallation de perl"
     sleep .5
     if [ "$lsb_dist" = "ubuntu" ] || [ "$lsb_dist" = "debian" ]; then
+        if [ "$dist_version" = "9" ] || [ "$lsb_version" = "18.04" ]; then
+            apt install -y apache2-dev
+        fi
         apt install -y perl6 libxml-simple-perl libdbi-perl libdbd-mysql-perl libapache-dbi-perl libnet-ip-perl libsoap-lite-perl libarchive-zip-perl
         cpan XML::Simple Compress::Zlib DBI DBD::mysql Apache::DBI Net::IP SOAP::Lite Mojolicious::Lite Plack::Handler Archive::Zip YAML XML::Entities Switch
     fi
