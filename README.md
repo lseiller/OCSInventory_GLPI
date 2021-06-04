@@ -11,11 +11,11 @@ Si vous rencontrez un problème ou que vous avez une suggestion ou que vous voul
 | Operating System  | Version | Compatibilité        | Recommandé         | Notes                                |
 | ----------------- | ------- | -------------------- | ------------------ | ------------------------------------ |
 | Ubuntu            | 20.10   | :heavy_check_mark:   | :heavy_check_mark: |                                      |
-|                   | 20.04   | :heavy_check_mark:   | :red_circle:    | Non testé                            |
+|                   | 20.04   | :heavy_check_mark:   | :red_circle:       | Non testé                            |
 |                   | 19.10   | :heavy_check_mark:   | :yellow_circle:    |                                      |
-|                   | 18.04   | :yellow_circle:      | :red_circle:       | See [bug #1](https://github.com/Lowan-S/OCSInventory_GLPI/issues/1)|
+|                   | 18.04   | :heavy_check_mark:   | :red_circle:       |                                      |
 | Debian            | 10      | :heavy_check_mark:   | :heavy_check_mark: |                                      |
-|                   | 9       | :yellow_circle:      | :red_circle:       | See [bug #1](https://github.com/Lowan-S/OCSInventory_GLPI/issues/1)|
+|                   | 9       | :heavy_check_mark:   | :red_circle:       |                                      |
 |                   |         |                      |                    |                                      |
 | CentOS            | x       | :red_circle:         | ?                  | ToDO                                 |
 | Fedora            | x       | :red_circle:         | ?                  | ToDO                                 |
