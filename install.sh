@@ -38,8 +38,6 @@ preinstall(){
         exit 3
     fi
 
-    output "\nC'est partit !"
-
     if [ "$lsb_dist" = "debian" ]; then
         if [ "$dist_version" = "9" ]; then
             warn "Vous êtes sur Debian 9, cette version n'est pas recommandé.\nVoulez-vous quand même procéder ?\n[1]Oui.\n[2]Non."
