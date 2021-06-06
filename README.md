@@ -22,8 +22,8 @@ Si vous rencontrez un problème ou que vous avez une suggestion ou que vous voul
 | Fedora            | 33      | :red_circle:         | :heavy_check_mark: | ToDO                                 |
 > Tested under HyperV, LXC and Bare Metal
 
-# Use this script (not recommended at this time) :
+# Download and use :
 ```shell
-wget https://raw.githubusercontent.com/Lowan-S/OCSInventory_GLPI/main/install.sh
+wget https://github.com/Lowan-S/OCSInventory_GLPI/releases/download/V0.1/install.sh
 sh install.sh
 ```
