@@ -24,6 +24,6 @@ Si vous rencontrez un problème ou que vous avez une suggestion ou que vous voul
 
 # Download and use :
 ```shell
-wget https://github.com/Lowan-S/OCSInventory_GLPI/releases/download/V0.1/install.sh
+wget https://raw.githubusercontent.com/Lowan-S/OCSInventory_GLPI/main/install.sh
 sh install.sh
 ```
