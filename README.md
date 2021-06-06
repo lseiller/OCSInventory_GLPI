@@ -11,14 +11,15 @@ Si vous rencontrez un problème ou que vous avez une suggestion ou que vous voul
 | Operating System  | Version | Compatibilité        | Recommandé         | Notes                                |
 | ----------------- | ------- | -------------------- | ------------------ | ------------------------------------ |
 | Ubuntu            | 20.10   | :heavy_check_mark:   | :heavy_check_mark: |                                      |
-|                   | 20.04   | :heavy_check_mark:   | :red_circle:       | Non testé                            |
-|                   | 19.10   | :heavy_check_mark:   | :yellow_circle:    |                                      |
-|                   | 18.04   | :heavy_check_mark:   | :red_circle:       |                                      |
+|                   | 20.04   | :heavy_check_mark:   | :heavy_check_mark: |                                      |
+|                   | 19.10   | :heavy_check_mark:   | :red_circle:       | End-Of-Life    Jan 2020              |
+|                   | 18.04   | :heavy_check_mark:   | :yellow_circle:    |                                      |
 | Debian            | 10      | :heavy_check_mark:   | :heavy_check_mark: |                                      |
-|                   | 9       | :heavy_check_mark:   | :red_circle:       |                                      |
-| CentOS            | x       | :red_circle:         | ?                  | ToDO                                 |
-| Fedora            | x       | :red_circle:         | ?                  | ToDO                                 |
-| RHEL              | x       | :red_circle:         | ?                  | ToDO                                 |
+|                   | 9       | :heavy_check_mark:   | :yellow_circle:    | End-Of-Life 30 Jun 2022              |
+| CentOS Linux      | 8       | :red_circle:         | :red_circle:       | End-Of-Life 31 Dec 2021 / ToDO       |
+|                   | 7       | :red_circle:         | :heavy_check_mark: | ToDO                                 |
+| CentOS Stream     | 8       | :red_circle:         | :heavy_check_mark: | ToDO                                 |
+| Fedora            | 33      | :red_circle:         | :heavy_check_mark: | ToDO                                 |
 > Tested under HyperV, LXC and Bare Metal
 
 # Use this script (not recommended at this time) :
