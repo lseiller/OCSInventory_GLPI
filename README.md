@@ -16,7 +16,6 @@ Si vous rencontrez un problème ou que vous avez une suggestion ou que vous voul
 |                   | 18.04   | :heavy_check_mark:   | :red_circle:       |                                      |
 | Debian            | 10      | :heavy_check_mark:   | :heavy_check_mark: |                                      |
 |                   | 9       | :heavy_check_mark:   | :red_circle:       |                                      |
-|                   |         |                      |                    |                                      |
 | CentOS            | x       | :red_circle:         | ?                  | ToDO                                 |
 | Fedora            | x       | :red_circle:         | ?                  | ToDO                                 |
 | RHEL              | x       | :red_circle:         | ?                  | ToDO                                 |
