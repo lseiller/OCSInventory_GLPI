@@ -112,10 +112,10 @@ os_check(){
         if [ "$dist_version" != "20.10" ] && [ "$dist_version" != "20.04" ] && [ "$dist_version" != "19.10" ] && [ "$dist_version" != "18.04" ]; then
             notsupported
         fi
-    elif [ "$lsb_dist" = "centos" ]; then
-        if [ "$dist_version" != "7" ] && [ "$dist_version" != "8" ]; then
-            notsupported
-        fi
+    #elif [ "$lsb_dist" = "centos" ]; then
+    #    if [ "$dist_version" != "7" ] && [ "$dist_version" != "8" ]; then
+    #        notsupported
+    #    fi
     else
         notsupported
     fi
