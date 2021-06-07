@@ -12,15 +12,14 @@ Si vous rencontrez un problème ou que vous avez une suggestion ou que vous voul
 | ----------------- | ------- | -------------------- | ------------------ | ------------------------------------ |
 | Ubuntu            | 20.10   | :heavy_check_mark:   | :heavy_check_mark: |                                      |
 |                   | 20.04   | :heavy_check_mark:   | :heavy_check_mark: |                                      |
-|                   | 19.10   | :heavy_check_mark:   | :red_circle:       | End-Of-Life    Jan 2020              |
 |                   | 18.04   | :heavy_check_mark:   | :yellow_circle:    |                                      |
 | Debian            | 10      | :heavy_check_mark:   | :heavy_check_mark: |                                      |
-|                   | 9       | :heavy_check_mark:   | :yellow_circle:    | End-Of-Life 30 Jun 2022              |
-| CentOS Linux      | 8       | :red_circle:         | :red_circle:       | End-Of-Life 31 Dec 2021 / ToDO       |
-|                   | 7       | :red_circle:         | :heavy_check_mark: | ToDO                                 |
+| CentOS Linux      | 7       | :red_circle:         | :heavy_check_mark: | ToDO                                 |
 | CentOS Stream     | 8       | :red_circle:         | :heavy_check_mark: | ToDO                                 |
 | Fedora            | 33      | :red_circle:         | :heavy_check_mark: | ToDO                                 |
-> Tested under HyperV, LXC and Bare Metal
+> Tested under HyperV, LXC and Bare Metal<br />
+
+*If your system is not available don't hesited to ask me to add it*
 
 # Download and use :
 ```shell
