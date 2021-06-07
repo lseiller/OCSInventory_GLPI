@@ -404,9 +404,18 @@ case $optioninstall in
         output "Que voulez-vous installer ?\n[1]OCSInventory.\n[2]GLPI.\n[3]MySQL."
         read choix
         case $choix in
-            1 ) 
+            1 ) common_dependencies
+                ocs_dependencies
+                ocs_install
+                ocs_webconfig
+                broadcast_ocs
+                info "N'oubliez pas de changer les configurations d'OCS pour la base de donnée"
                 ;;
-            2 ) 
+            2 ) common_dependencies
+                glpi_dependencies
+                glpi_install
+                glpi_webconfig
+                broadcast_glpi
                 ;;
             3 ) output "Avez-vous déjà un serveur MySQL installé ?\n[1]Oui.\n[2]Non."
                 read choix
@@ -447,7 +456,7 @@ case $optioninstall in
                         broadcast_glpi
                         sleep 2
                         broadcast_ocs
-                ;;
+                        ;;
         esac
         ;;
 esac
