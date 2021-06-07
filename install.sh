@@ -129,6 +129,7 @@ option_install(){
     output "[4] Changer la version d'OCS"
     output "[5] Changer la version de GLPI"
     output "[6] Reset Password root of MySQL"
+    output "[7] Installer OCSInventory v${OCSVERSION}, GLPI v${GLPIVERSION} et les bases de données sur différents serveurs (VM)."
     read choix
     case $choix in
         1 ) optioninstall=1
@@ -151,6 +152,8 @@ option_install(){
             option_install
             ;;
         6 ) curl -sSL https://raw.githubusercontent.com/tommytran732/MariaDB-Root-Password-Reset/master/mariadb-104.sh | sudo bash
+            ;;
+        7 ) optioninstall=4
             ;;
         * ) info "Vous n'avez pas choisie d'option."
             option_install
@@ -178,7 +181,7 @@ common_dependencies(){
     if [ "$lsb_dist" = "ubuntu" ] || [ "$lsb_dist" = "debian" ]; then
         apt -y install apache2 libapache2-mod-perl2
         apt -y install php php-curl php-gd php-json php-mbstring php-mysql php-xml php-intl php-cli php-ldap php-apcu php-xmlrpc
-        apt install -y make sudo tar unzip build-essential
+        apt -y install make sudo tar unzip build-essential
         apt -y install mariadb-server mariadb-client mariadb-common
     fi
 
@@ -392,10 +395,60 @@ case $optioninstall in
         ocs_setup
         glpi_setup
         broadcast_sql
-        sleep 5
+        sleep 1
         broadcast_glpi
-        sleep 10
+        sleep 2
         broadcast_ocs
+        ;;
+    4 ) repositories_setup
+        output "Que voulez-vous installer ?\n[1]OCSInventory.\n[2]GLPI.\n[3]MySQL."
+        read choix
+        case $choix in
+            1 ) 
+                ;;
+            2 ) 
+                ;;
+            3 ) output "Avez-vous déjà un serveur MySQL installé ?\n[1]Oui.\n[2]Non."
+                read choix
+                case $choix in
+                    1 ) output "Quels est votre password root de MySQL ?"
+                        read rootpassword
+                        ocs_mysql
+                        glpi_mysql
+                        output "Quels est l'adresse IP de votre Machine GLPI ?"
+                        read ipglpi
+                        output "Quelle est l'adresse IP de votre Machine OCS ?"
+                        read ipocs
+                        Q0="GRANT ALL ON ocsweb.* to 'ocs'@'$ipocs' IDENTIFIED BY '$ocs_password';"
+                        Q1="GRANT ALL ON glpi.* to 'glpi'@'$ipglpi' IDENTIFIED BY '$glpi_password';"
+                        Q2="FLUSH PRIVILEGES;"
+                        SQL="${Q0}${Q1}${Q2}"
+                        sudo mysql -u root -e "$SQL" -p$rootpassword
+                        sleep 1
+                        broadcast_glpi
+                        sleep 2
+                        broadcast_ocs
+                        ;;
+                    2 ) apt -y install mariadb-server mariadb-client mariadb-common
+                        apt -y install make sudo tar unzip build-essential
+                        msyql_setup
+                        ocs_mysql
+                        glpi_mysql
+                        output "Quelle est l'adresse IP de votre Machine GLPI ?"
+                        read ipglpi
+                        output "Quelle est l'adresse IP de votre Machine OCS ?"
+                        read ipocs
+                        Q0="GRANT ALL ON ocsweb.* to 'ocs'@'$ipocs' IDENTIFIED BY '$ocs_password';"
+                        Q1="GRANT ALL ON glpi.* to 'glpi'@'$ipglpi' IDENTIFIED BY '$glpi_password';"
+                        Q2="FLUSH PRIVILEGES;"
+                        SQL="${Q0}${Q1}${Q2}"
+                        sudo mysql -u root -e "$SQL" -p$rootpassword
+                        sleep 1
+                        broadcast_glpi
+                        sleep 2
+                        broadcast_ocs
+                ;;
+        esac
         ;;
 esac
 output "Fin du script d'installation."
