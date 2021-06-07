@@ -18,8 +18,8 @@ notsupported(){
         output "Votre système n'est pas compatible"
         output ""
         output "OS Supporté :"
-        output "Debian 10, 9"
-        output "Ubuntu 20.10, 20.04, 19.10, 18.04"
+        output "Debian 10"
+        output "Ubuntu 20.10, 20.04, 18.04"
         #output "CentOS Linux 8, 7"
         #output "CentOS Stream 8"
         #output "Fedora 33"
@@ -39,8 +39,8 @@ preinstall(){
     fi
 
     if [ "$lsb_dist" = "debian" ]; then
-        if [ "$dist_version" = "9" ]; then
-            warn "Vous êtes sur Debian 9, cette version n'est pas recommandé.\nVoulez-vous quand même procéder ?\n[1]Oui.\n[2]Non."
+        if [ "$dist_version" = "0" ]; then
+            warn "Vous êtes sur Debian $dist_version, cette version n'est pas recommandé.\nVoulez-vous quand même procéder ?\n[1]Oui.\n[2]Non."
             read choix
             case $choix in
                 1 ) output "On continue !"
@@ -51,10 +51,10 @@ preinstall(){
             esac
         fi
         dpkg --configure -a
-        apt update --fix-missing && apt upgrade -y
+        apt update && apt upgrade -y
         apt-get -y install software-properties-common virt-what wget sudo
     elif [ "$lsb_dist" = "ubuntu" ]; then
-        if [ "$dist_version" = "18.04" ] || [ "$dist_version" = "19.10" ]; then
+        if [ "$dist_version" = "18.04" ]; then
             warn "Vous êtes sur Ubuntu ${dist_version}, cette version n'est pas recommandé.\nVoulez-vous quand même procéder ?\n[1]Oui.\n[2]Non."
             read choix
             case $choix in
@@ -64,9 +64,6 @@ preinstall(){
                     exit 7
                     ;;
             esac
-        elif [ "$dist_version" = "19.10" ]; then
-            sudo sed -i -e 's/archive.ubuntu.com\|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list || sed -i -e 's/archive.ubuntu.com\|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list
-            grep -E 'archive.ubuntu.com|security.ubuntu.com' /etc/apt/sources.list.d/*
         fi
         dpkg --configure -a
         apt update --fix-missing && apt upgrade -y
@@ -105,11 +102,11 @@ os_check(){
     fi
 
     if [ "$lsb_dist" = "debian" ]; then
-        if [ "$dist_version" != "10" ] && [ "$dist_version" != "9" ]; then
+        if [ "$dist_version" != "10" ]; then
             notsupported
         fi
     elif [ "$lsb_dist" = "ubuntu" ]; then
-        if [ "$dist_version" != "20.10" ] && [ "$dist_version" != "20.04" ] && [ "$dist_version" != "19.10" ] && [ "$dist_version" != "18.04" ]; then
+        if [ "$dist_version" != "20.10" ] && [ "$dist_version" != "20.04" ] && [ "$dist_version" != "18.04" ]; then
             notsupported
         fi
     #elif [ "$lsb_dist" = "centos" ]; then
@@ -123,13 +120,13 @@ os_check(){
 
 option_install(){
     output "Séléctionner l'option d'installation :"
-    output "[1] Installer OCSInventory v${OCSVERSION}."
-    output "[2] Installer GLPI v${GLPIVERSION}."
-    output "[3] Installer GLPI v${GLPIVERSION} et OCSInventory v${OCSVERSION}."
-    output "[4] Changer la version d'OCS"
-    output "[5] Changer la version de GLPI"
-    output "[6] Reset Password root of MySQL"
-    output "[7] Installer OCSInventory v${OCSVERSION}, GLPI v${GLPIVERSION} et les bases de données sur différents serveurs (VM)."
+    output "[1] Install OCSInventory v${OCSVERSION}."
+    output "[2] Install GLPI v${GLPIVERSION}."
+    output "[3] Install GLPI v${GLPIVERSION} + OCSInventory v${OCSVERSION}."
+    output "[4] Choose Version of OCS"
+    output "[5] Choose Version of GLPI"
+    output "[6] Reset root MySQL"
+    output "[7] Install OCSInventory v${OCSVERSION}, GLPI v${GLPIVERSION}, MySQL individually."
     read choix
     case $choix in
         1 ) optioninstall=1
@@ -180,7 +177,7 @@ common_dependencies(){
     sleep 1
     if [ "$lsb_dist" = "ubuntu" ] || [ "$lsb_dist" = "debian" ]; then
         apt -y install apache2 libapache2-mod-perl2
-        apt -y install php php-curl php-gd php-json php-mbstring php-mysql php-xml php-intl php-cli php-ldap php-apcu php-xmlrpc
+        apt -y install php php-curl php-gd php-json php-mbstring php-mysql php-xml php-intl php-cli php-ldap php-apcu php-xmlrpc php-zip
         apt -y install make sudo tar unzip build-essential
         apt -y install mariadb-server mariadb-client mariadb-common
     fi
@@ -213,9 +210,9 @@ ocs_dependencies(){
     output "\nInstallation des dependences d'OCS"
     sleep .5
     if [ "$lsb_dist" = "ubuntu" ] || [ "$lsb_dist" = "debian" ]; then
-        apt install -y php-zip php-soap libapache2-mod-php
+        apt install -y php-soap libapache2-mod-php
         apt install -y perl6 libxml-simple-perl libdbi-perl libdbd-mysql-perl libapache-dbi-perl libnet-ip-perl libsoap-lite-perl libarchive-zip-perl
-        if [ "$dist_version" = "9" ] || [ "$dist_version" = "18.04" ]; then
+        if [ "$dist_version" = "18.04" ]; then
             cpan XML::Simple Compress::Zlib DBI DBD::mysql Apache::DBI Net::IP Mojolicious::Lite Plack::Handler Archive::Zip YAML XML::Entities Switch
         else
             cpan XML::Simple Compress::Zlib DBI DBD::mysql Apache::DBI Net::IP SOAP::Lite Mojolicious::Lite Plack::Handler Archive::Zip YAML XML::Entities Switch
@@ -339,7 +336,7 @@ broadcast_sql(){
 broadcast_ocs(){
     output "###############################################################"
     output "Base de donnée OCS :"
-    output "Host: 127.0.0.1 || localhost"
+    output "Host: 127.0.0.1 || IP de votre serveur BDD"
     output "Port: 3306"
     output "User: ocs"
     output "Nom de la BDD: ocsweb"
@@ -357,7 +354,7 @@ broadcast_ocs(){
 broadcast_glpi(){
     output "###############################################################"
     output "Pour connecter GLPI à la base de donnée vous aurez besoin de ces informations :"
-    output "Host: 127.0.0.1 || localhost"
+    output "Host: 127.0.0.1 || IP de votre serveur BDD"
     output "Port: 3306"
     output "User: glpi"
     output "Nom de la BDD: glpi"
