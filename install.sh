@@ -457,6 +457,7 @@ case $optioninstall in
                         sleep 2
                         broadcast_ocs
                         ;;
+                esac
         esac
         ;;
 esac
