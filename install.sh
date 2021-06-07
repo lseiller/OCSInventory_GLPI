@@ -455,6 +455,7 @@ case $optioninstall in
                         broadcast_ocs
                         ;;
                 esac
+                ;;
         esac
         ;;
 esac
