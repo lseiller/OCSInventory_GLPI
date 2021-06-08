@@ -1,6 +1,7 @@
 #!/bin/bash
 OCSVERSION=2.9
 GLPIVERSION=9.5.5
+ip4=$(/sbin/ip -o -4 addr list eth0 | awk '{print $4}' | cut -d/ -f1)
 
 output(){
     echo '\e[36m'$1'\e[0m';
@@ -39,20 +40,19 @@ preinstall(){
     fi
 
     if [ "$lsb_dist" = "debian" ]; then
-        if [ "$dist_version" = "0" ]; then
+        if [ "$dist_version" != "10" ]; then
             warn "Vous êtes sur Debian $dist_version, cette version n'est pas recommandé.\nVoulez-vous quand même procéder ?\n[1]Oui.\n[2]Non."
             read choix
             case $choix in
                 1 ) output "On continue !"
                     ;;
-                2 ) output "Arrêt du script"
+                2 ) output "Exit"
                     exit 7
                     ;;
             esac
         fi
-        dpkg --configure -a
         apt update && apt upgrade -y
-        apt-get -y install software-properties-common virt-what wget sudo
+        apt -y install virt-what sudo
     elif [ "$lsb_dist" = "ubuntu" ]; then
         if [ "$dist_version" = "18.04" ]; then
             warn "Vous êtes sur Ubuntu ${dist_version}, cette version n'est pas recommandé.\nVoulez-vous quand même procéder ?\n[1]Oui.\n[2]Non."
@@ -60,14 +60,13 @@ preinstall(){
             case $choix in
                 1 ) output "On continue !"
                     ;;
-                2 ) output "Arrêt du script"
+                2 ) output "Exit"
                     exit 7
                     ;;
             esac
         fi
-        dpkg --configure -a
         apt update --fix-missing && apt upgrade -y
-        apt-get -y install software-properties-common virt-what wget
+        apt -y install virt-what
     fi
 
     virt_serv=$(echo $(virt-what))
@@ -82,9 +81,6 @@ preinstall(){
         1)  output "Lancement....\n\n"
             ;;
         2)  output "Installation annulé."
-            exit 8
-            ;;
-        *)  info "Aucune option choisie"
             exit 8
             ;;
     esac
@@ -120,9 +116,9 @@ os_check(){
 
 option_install(){
     output "Séléctionner l'option d'installation :"
-    output "[1] Install OCSInventory v${OCSVERSION}."
-    output "[2] Install GLPI v${GLPIVERSION}."
-    output "[3] Install GLPI v${GLPIVERSION} + OCSInventory v${OCSVERSION}."
+    output "[1] Install OCSInventory v${OCSVERSION} with MySQL."
+    output "[2] Install GLPI v${GLPIVERSION} with MySQL."
+    output "[3] Install GLPI v${GLPIVERSION} + OCSInventory v${OCSVERSION} with MySQL."
     output "[4] Choose Version of OCS"
     output "[5] Choose Version of GLPI"
     output "[6] Reset root MySQL"
@@ -130,13 +126,10 @@ option_install(){
     read choix
     case $choix in
         1 ) optioninstall=1
-            output "Vous avez choisie l'installation d'OCS uniquement."
             ;;
         2 ) optioninstall=2
-            output "Vous avez choisie l'installation de GLPI uniquement."
             ;;
         3 ) optioninstall=3
-            output "Vous avez choisie l'installation de GLPI et OCS."
             ;;
         4 ) output "Indiquez la version d'OCS que vous voulez installer :"
             read version
@@ -162,7 +155,6 @@ repositories_setup(){
     output "\nConfiguration des repo..."
     sleep 1
     if [ "$lsb_dist" = "ubuntu" ] || [ "$lsb_dist" = "debian" ]; then
-        apt -y install curl
         apt -y install software-properties-common curl apt-transport-https ca-certificates gnupg
         curl -sS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash
         apt -y update
@@ -176,7 +168,7 @@ common_dependencies(){
     output "\nInstallation des dépendences..."
     sleep 1
     if [ "$lsb_dist" = "ubuntu" ] || [ "$lsb_dist" = "debian" ]; then
-        apt -y install apache2 libapache2-mod-perl2
+        apt -y install apache2 libapache2-mod-php
         apt -y install php php-curl php-gd php-json php-mbstring php-mysql php-xml php-intl php-cli php-ldap php-apcu php-xmlrpc php-zip
         apt -y install make sudo tar unzip build-essential
         apt -y install mariadb-server mariadb-client mariadb-common
@@ -210,7 +202,7 @@ ocs_dependencies(){
     output "\nInstallation des dependences d'OCS"
     sleep .5
     if [ "$lsb_dist" = "ubuntu" ] || [ "$lsb_dist" = "debian" ]; then
-        apt install -y php-soap libapache2-mod-php
+        apt install -y php-soap libapache2-mod-perl2
         apt install -y perl6 libxml-simple-perl libdbi-perl libdbd-mysql-perl libapache-dbi-perl libnet-ip-perl libsoap-lite-perl libarchive-zip-perl
         if [ "$dist_version" = "18.04" ]; then
             cpan XML::Simple Compress::Zlib DBI DBD::mysql Apache::DBI Net::IP Mojolicious::Lite Plack::Handler Archive::Zip YAML XML::Entities Switch
@@ -223,7 +215,6 @@ ocs_dependencies(){
 
 glpi_dependencies(){
     output "\nInstallation des dependences de GLPI"
-    sleep .5
     if [ "$lsb_dist" = "ubuntu" ] || [ "$lsb_dist" = "debian" ]; then
         apt install -y php-fileinfo php-simplexml php-cas php-bz2
     fi
@@ -232,14 +223,14 @@ glpi_dependencies(){
 
 ocs_install(){
     if [ "$lsb_dist" = "ubuntu" ] || [ "$lsb_dist" = "debian" ]; then
-        sudo service apache2 restart #Load OCSInventory dependencies
+        sudo service apache2 restart
         mkdir /opt/ocs
         wget https://github.com/OCSInventory-NG/OCSInventory-ocsreports/releases/download/${OCSVERSION}/OCSNG_UNIX_SERVER-${OCSVERSION}.tar.gz -P /opt/ocs
         tar -xf /opt/ocs/OCSNG_UNIX_SERVER-${OCSVERSION}.tar.gz
         rm /opt/ocs/OCSNG_UNIX_SERVER-${OCSVERSION}.tar.gz
         cp ./OCSNG_UNIX_SERVER-${OCSVERSION}/ /opt/ocs -r && rm ./OCSNG_UNIX_SERVER-${OCSVERSION}/ -R
         chmod +x /opt/ocs/OCSNG_UNIX_SERVER-${OCSVERSION}/setup.sh
-        warn "\nDémarrage de l'installation OCS, vous allez indiquer les configurations d'ocs lors des étapes suivantes.${NC}"
+        info "\nDémarrage du setup d'OCS, lors des prochaines étapes vous indiquerez au setup comment vous voulez configurer OCS\n(les paramètres sont à laisser par défaut si vous voulez un configuration basique)."
         sleep 5
         cd /opt/ocs/OCSNG_UNIX_SERVER-${OCSVERSION}/
         sh setup.sh
@@ -265,8 +256,8 @@ ocs_webconfig(){
         chmod 777 /var/lib/ocsinventory-reports/
         chmod 775 /usr/share/ocsinventory-reports/ocsreports/
         systemctl reload apache2
-        cd /usr/share/ocsinventory-reports/ocsreports/files/
-        mysql -f -hlocalhost -uroot -p$rootpassword ocsweb < ocsbase.sql >log.log
+        #cd /usr/share/ocsinventory-reports/ocsreports/files/
+        #mysql -f -hlocalhost -uroot -p$rootpassword ocsweb < ocsbase.sql >log.log
     fi
 }
 
@@ -328,7 +319,7 @@ broadcast_sql(){
     output "###############################################################"
     output "Information sur MariaDB"
     output ""
-    output "Votre mot de passe root MySQL est : $rootpassword"
+    info "Votre mot de passe root MySQL est : $rootpassword"
     output ""
     output "###############################################################"
 }
@@ -336,14 +327,13 @@ broadcast_sql(){
 broadcast_ocs(){
     output "###############################################################"
     output "Base de donnée OCS :"
-    output "Host: 127.0.0.1 || IP de votre serveur BDD"
+    output "Host: 127.0.0.1"
     output "Port: 3306"
     output "User: ocs"
     output "Nom de la BDD: ocsweb"
     output "Password: $ocs_password"
     output ""
     output "Interface web d'OCS :"
-    ip4=$(/sbin/ip -o -4 addr list eth0 | awk '{print $4}' | cut -d/ -f1)
     output "http://${ip4}/ocsreports"
     output "Par défaut les identifiants sont :"
     output "User: admin"
@@ -361,7 +351,6 @@ broadcast_glpi(){
     output "Password: $glpi_password"
     output ""
     output "Interface web de GLPI :"
-    ip4=$(/sbin/ip -o -4 addr list eth0 | awk '{print $4}' | cut -d/ -f1)
     output "http://${ip4}/glpi"
     output "Par défaut les identifiants sont :"
     output "User: glpi"
@@ -392,9 +381,7 @@ case $optioninstall in
         ocs_setup
         glpi_setup
         broadcast_sql
-        sleep 1
         broadcast_glpi
-        sleep 2
         broadcast_ocs
         ;;
     4 ) repositories_setup
@@ -417,7 +404,7 @@ case $optioninstall in
             3 ) output "Avez-vous déjà un serveur MySQL installé ?\n[1]Oui.\n[2]Non."
                 read choix
                 case $choix in
-                    1 ) output "Quels est votre password root de MySQL ?"
+                    1 ) output "Indiquez le password root de MySQL :"
                         read rootpassword
                         ocs_mysql
                         glpi_mysql
@@ -430,9 +417,7 @@ case $optioninstall in
                         Q2="FLUSH PRIVILEGES;"
                         SQL="${Q0}${Q1}${Q2}"
                         sudo mysql -u root -e "$SQL" -p$rootpassword
-                        sleep 1
                         broadcast_glpi
-                        sleep 2
                         broadcast_ocs
                         ;;
                     2 ) apt -y install mariadb-server mariadb-client mariadb-common
@@ -449,9 +434,7 @@ case $optioninstall in
                         Q2="FLUSH PRIVILEGES;"
                         SQL="${Q0}${Q1}${Q2}"
                         sudo mysql -u root -e "$SQL" -p$rootpassword
-                        sleep 1
                         broadcast_glpi
-                        sleep 2
                         broadcast_ocs
                         ;;
                 esac
