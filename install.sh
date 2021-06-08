@@ -4,15 +4,15 @@ GLPIVERSION=9.5.5
 ip4=$(/sbin/ip -o -4 addr list eth0 | awk '{print $4}' | cut -d/ -f1)
 
 output(){
-    echo '\e[36m'$1'\e[0m';
+    echo -e '\e[36m'$1'\e[0m';
 }
 
 warn(){
-    echo '\e[31m'$1'\e[0m'
+    echo -e '\e[31m'$1'\e[0m'
 }
 
 info(){
-    echo '\e[33m'$1'\e1'
+    echo -e '\e[33m'$1'\e1'
 }
 
 notsupported(){
