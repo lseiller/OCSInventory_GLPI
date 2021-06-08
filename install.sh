@@ -21,7 +21,7 @@ notsupported(){
         output "OS Supporté :"
         output "Debian 10"
         output "Ubuntu 20.10, 20.04, 18.04"
-        #output "CentOS Linux 8, 7"
+        output "CentOS Linux 8, 7"
         #output "CentOS Stream 8"
         #output "Fedora 33"
         exit 2
@@ -67,6 +67,9 @@ preinstall(){
         fi
         apt update --fix-missing && apt upgrade -y
         apt -y install virt-what
+    elif [ "$lsb_dist" = "centos" ]; then
+        yum -y update && yum -y upgrade
+        yum -y install virt-what sudo
     fi
 
     virt_serv=$(echo $(virt-what))
@@ -105,10 +108,10 @@ os_check(){
         if [ "$dist_version" != "20.10" ] && [ "$dist_version" != "20.04" ] && [ "$dist_version" != "18.04" ]; then
             notsupported
         fi
-    #elif [ "$lsb_dist" = "centos" ]; then
-    #    if [ "$dist_version" != "7" ] && [ "$dist_version" != "8" ]; then
-    #        notsupported
-    #    fi
+    elif [ "$lsb_dist" = "centos" ]; then
+        if [ "$dist_version" != "7" ] && [ "$dist_version" != "8" ]; then
+            notsupported
+        fi
     else
         notsupported
     fi
@@ -161,6 +164,15 @@ repositories_setup(){
         apt -y upgrade
         apt -y autoremove
         apt -y autoclean
+    elif [ "$lsb_dist" = "centos" ]; then
+        curl -sS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash
+        yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+        yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm
+        yum -y install dnf yum-utils
+        yum-config-manager --enable remi-php73
+        dnf -y update
+        dnf -y upgrade
+        #yum -y install epel-release 
     fi
 }
 
@@ -170,15 +182,17 @@ common_dependencies(){
     if [ "$lsb_dist" = "ubuntu" ] || [ "$lsb_dist" = "debian" ]; then
         apt -y install apache2 libapache2-mod-php
         apt -y install php php-curl php-gd php-json php-mbstring php-mysql php-xml php-intl php-cli php-ldap php-apcu php-xmlrpc php-zip
-        apt -y install make sudo tar unzip build-essential
+        apt -y install make unzip build-essential
         apt -y install mariadb-server mariadb-client mariadb-common
-    fi
-
-    output "\nActivation des services..."
-    sleep .5
-    if [ "$lsb_dist" = "ubuntu" ] || [ "$lsb_dist" = "debian" ]; then
         systemctl enable apache2
         systemctl start apache2
+    elif [ "$lsb_dist" = "centos" ]; then
+        yum -y install httpd
+        yum -y install php php-gd php-mbstring php-mysql php-xml php-intl php-ldap php-apcu php-xmlrpc php-zip php-opcache php-sodium
+        yum -y install make unzip
+        yum -y install mariadb-server
+        systemctl enable httpd
+        systemctl start httpd
     fi
     systemctl enable mariadb
     systemctl start mariadb
@@ -205,10 +219,18 @@ ocs_dependencies(){
         apt install -y php-soap libapache2-mod-perl2
         apt install -y perl6 libxml-simple-perl libdbi-perl libdbd-mysql-perl libapache-dbi-perl libnet-ip-perl libsoap-lite-perl libarchive-zip-perl
         if [ "$dist_version" = "18.04" ]; then
-            cpan XML::Simple Compress::Zlib DBI DBD::mysql Apache::DBI Net::IP Mojolicious::Lite Plack::Handler Archive::Zip YAML XML::Entities Switch
+            #cpan XML::Simple Compress::Zlib DBI DBD::mysql Apache::DBI Net::IP Mojolicious::Lite Plack::Handler Archive::Zip YAML XML::Entities Switch
+            cpan Compress::Zlib Mojolicious::Lite Plack::Handler YAML XML::Entities Switch
         else
-            cpan XML::Simple Compress::Zlib DBI DBD::mysql Apache::DBI Net::IP SOAP::Lite Mojolicious::Lite Plack::Handler Archive::Zip YAML XML::Entities Switch
+            #cpan XML::Simple Compress::Zlib DBI DBD::mysql Apache::DBI Net::IP SOAP::Lite Mojolicious::Lite Plack::Handler Archive::Zip YAML XML::Entities Switch
+            cpan Compress::Zlib Mojolicious::Lite Plack::Handler YAML XML::Entities Switch
         fi
+        sudo service apache2 restart
+    elif [ "$lsb_dist" = "centos" ]; then
+        yum -y install php-soap perl-DBD-MySQL perl-XML-Simple perl-Apache-DBI perl-XML-Entities perl-Apache2-SOAP perl-Mojolicious perl-Plack
+        dnf -y install cpan
+        cpan Compress::Zlib Net::IP Archive::Zip YAML XML::Entities Switch
+        sudo service httpd restart
     fi
 
 }
@@ -217,36 +239,34 @@ glpi_dependencies(){
     output "\nInstallation des dependences de GLPI"
     if [ "$lsb_dist" = "ubuntu" ] || [ "$lsb_dist" = "debian" ]; then
         apt install -y php-fileinfo php-simplexml php-cas php-bz2
+    elif [ "$lsb_dist" = "centos" ]; then
+        yum -y install php-pear-CAS
     fi
 
 }
 
 ocs_install(){
-    if [ "$lsb_dist" = "ubuntu" ] || [ "$lsb_dist" = "debian" ]; then
-        sudo service apache2 restart
-        mkdir /opt/ocs
-        wget https://github.com/OCSInventory-NG/OCSInventory-ocsreports/releases/download/${OCSVERSION}/OCSNG_UNIX_SERVER-${OCSVERSION}.tar.gz -P /opt/ocs
-        tar -xf /opt/ocs/OCSNG_UNIX_SERVER-${OCSVERSION}.tar.gz
-        rm /opt/ocs/OCSNG_UNIX_SERVER-${OCSVERSION}.tar.gz
-        cp ./OCSNG_UNIX_SERVER-${OCSVERSION}/ /opt/ocs -r && rm ./OCSNG_UNIX_SERVER-${OCSVERSION}/ -R
-        chmod +x /opt/ocs/OCSNG_UNIX_SERVER-${OCSVERSION}/setup.sh
-        info "\nDémarrage du setup d'OCS, lors des prochaines étapes vous indiquerez au setup comment vous voulez configurer OCS\n(les paramètres sont à laisser par défaut si vous voulez un configuration basique)."
-        sleep 5
-        cd /opt/ocs/OCSNG_UNIX_SERVER-${OCSVERSION}/
-        sh setup.sh
-    fi
+    mkdir /opt/ocs
+    wget https://github.com/OCSInventory-NG/OCSInventory-ocsreports/releases/download/${OCSVERSION}/OCSNG_UNIX_SERVER-${OCSVERSION}.tar.gz -P /opt/ocs
+    tar -xf /opt/ocs/OCSNG_UNIX_SERVER-${OCSVERSION}.tar.gz
+    rm /opt/ocs/OCSNG_UNIX_SERVER-${OCSVERSION}.tar.gz -f
+    cp ./OCSNG_UNIX_SERVER-${OCSVERSION}/ /opt/ocs -r && rm ./OCSNG_UNIX_SERVER-${OCSVERSION}/ -R -f
+    chmod +x /opt/ocs/OCSNG_UNIX_SERVER-${OCSVERSION}/setup.sh
+    info "\nDémarrage du setup d'OCS, lors des prochaines étapes vous indiquerez au setup comment vous voulez configurer OCS\n(les paramètres sont à laisser par défaut si vous voulez un configuration basique)."
+    sleep 5
+    cd /opt/ocs/OCSNG_UNIX_SERVER-${OCSVERSION}/
+    sh setup.sh
 }
 
 glpi_install(){
-    if [ "$lsb_dist" = "ubuntu" ] || [ "$lsb_dist" = "debian" ]; then
-        mkdir /opt/glpi
-        wget https://github.com/glpi-project/glpi/releases/download/${GLPIVERSION}/glpi-${GLPIVERSION}.tgz -P /opt/glpi
-        tar -xf /opt/glpi/glpi-${GLPIVERSION}.tgz
-        rm /opt/glpi/glpi-${GLPIVERSION}.tgz
-        cp ./glpi/ /opt/ -r && rm ./glpi/ -R
-        chmod 777 /opt/glpi/files/ -R
-        chmod 777 /opt/glpi/config/ -R
-        chmod 777 /opt/glpi/marketplace/ -R
+    mkdir /opt/glpi
+    wget https://github.com/glpi-project/glpi/releases/download/${GLPIVERSION}/glpi-${GLPIVERSION}.tgz -P /opt/glpi
+    tar -xf /opt/glpi/glpi-${GLPIVERSION}.tgz
+    rm /opt/glpi/glpi-${GLPIVERSION}.tgz -f
+    cp ./glpi/ /opt/ -r && rm ./glpi/ -R -f
+    chmod 777 /opt/glpi/files/ -R
+    chmod 777 /opt/glpi/config/ -R
+    chmod 777 /opt/glpi/marketplace/ -R
     fi
 }
 
@@ -258,12 +278,20 @@ ocs_webconfig(){
         systemctl reload apache2
         #cd /usr/share/ocsinventory-reports/ocsreports/files/
         #mysql -f -hlocalhost -uroot -p$rootpassword ocsweb < ocsbase.sql >log.log
+    elif [ "$lsb_dist" = "centos" ]; then
+        cp /etc/httpd/conf.d/z-ocsinventory-server.conf /etc/httpd/conf/
+        chmod 777 /var/lib/ocsinventory-reports/
+        chmod 775 /usr/share/ocsinventory-reports/ocsreports/
+        systemctl reload httpd
+
     fi
 }
 
 glpi_webconfig(){
     if [ "$lsb_dist" = "ubuntu" ] || [ "$lsb_dist" = "debian" ]; then
         glpiconf=/etc/apache2/conf-available/glpi.conf
+    elif [ "$lsb_dist" = "centos" ]; then
+        glpiconf=/etc/httpd/conf/glpi.conf
     fi
     cat << EOF > $glpiconf
 Alias /glpi /opt/glpi
@@ -278,6 +306,8 @@ EOF
     if [ "$lsb_dist" = "ubuntu" ] || [ "$lsb_dist" = "debian" ]; then
         cp /etc/apache2/conf-available/glpi.conf /etc/apache2/sites-enabled/
         service apache2 restart
+    elif [ "$lsb_dist" = "centos" ]; then
+        service httpd restart
     fi
 }
 
@@ -420,8 +450,12 @@ case $optioninstall in
                         broadcast_glpi
                         broadcast_ocs
                         ;;
-                    2 ) apt -y install mariadb-server mariadb-client mariadb-common
-                        apt -y install make sudo tar unzip build-essential
+                    2 ) if [ "$lsb_dist" = "ubuntu" ] || [ "$lsb_dist" = "debian" ]; then
+                            apt -y install mariadb-server mariadb-client mariadb-common
+                            apt -y install sudo build-essential
+                        elif [ "$lsb_dist" = "centos" ]; then
+                            yum -y install mariadb-server sudo
+                        fi
                         msyql_setup
                         ocs_mysql
                         glpi_mysql
