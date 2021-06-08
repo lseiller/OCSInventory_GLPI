@@ -252,7 +252,7 @@ ocs_install(){
     rm /opt/ocs/OCSNG_UNIX_SERVER-${OCSVERSION}.tar.gz -f
     cp ./OCSNG_UNIX_SERVER-${OCSVERSION}/ /opt/ocs -r && rm ./OCSNG_UNIX_SERVER-${OCSVERSION}/ -R -f
     chmod +x /opt/ocs/OCSNG_UNIX_SERVER-${OCSVERSION}/setup.sh
-    info "\nDémarrage du setup d'OCS, lors des prochaines étapes vous indiquerez au setup comment vous voulez configurer OCS\n(les paramètres sont à laisser par défaut si vous voulez un configuration basique)."
+    info "\nDémarrage du setup d'OCS, lors des prochaines étapes vous indiquerez au setup comment vous voulez configurer OCS\n(les paramètres sont à laisser par défaut si vous voulez une configuration basique)."
     sleep 5
     cd /opt/ocs/OCSNG_UNIX_SERVER-${OCSVERSION}/
     sh setup.sh
