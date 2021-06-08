@@ -21,8 +21,8 @@ notsupported(){
         output "OS Supporté :"
         output "Debian 10"
         output "Ubuntu 20.10, 20.04, 18.04"
-        output "CentOS Linux 8, 7"
-        #output "CentOS Stream 8"
+        output "CentOS Linux 7, (8 but I highly recommend to switch on CentOS Stream)"
+        output "CentOS Stream 8"
         #output "Fedora 33"
         exit 2
 }
@@ -267,7 +267,6 @@ glpi_install(){
     chmod 777 /opt/glpi/files/ -R
     chmod 777 /opt/glpi/config/ -R
     chmod 777 /opt/glpi/marketplace/ -R
-    fi
 }
 
 ocs_webconfig(){
