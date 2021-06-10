@@ -25,6 +25,7 @@ Si vous rencontrez un problème ou que vous avez une suggestion ou que vous voul
 |                   | 7       | :heavy_check_mark:   | :heavy_check_mark: |                                      |
 | CentOS Stream     | 8       | :question:           |                    | Not tested                           |
 | Fedora            | 33      | :red_circle:         |                    | ToDO                                 |
+
 > Tested under HyperV, LXC and Bare Metal<br />
 
 *If your system is not available don't hesited to ask me to add it*
