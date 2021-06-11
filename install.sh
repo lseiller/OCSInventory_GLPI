@@ -12,7 +12,7 @@ warn(){
 }
 
 info(){
-    echo -e '\e[33m'$1'\e1[0m';
+    echo -e '\e[33m'$1'\e[0m';
 }
 
 notsupported(){
