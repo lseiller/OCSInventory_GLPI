@@ -1,9 +1,9 @@
 # OCSInventory/GLPI-Script
-Installation de OCSInventory, GLPI et MariaDB. <br />
+Install OCSInventory, GLPI, MariaDB and OCS/GLPI connector. <br />
 <br />
-Ce script doit être lancé avec l'utilisateur root, il est préférable qu'il soit utilisé sur une nouvelle installation.<br />
+This script must be run as **root**. It is also **hightly recommended** to use this script on a **fresh** installation.<br />
 <br />
-Ce que peut faire ce script :<br />
+What can this scipt do ?<br />
 * Install OCSInventory with MySQL.<br />
 * Install GLPI with MySQL.<br />
 * Install GLPI + OCSInventory with MySQL.<br />
@@ -12,17 +12,15 @@ Ce que peut faire ce script :<br />
 * Install OCSInventory, GLPI, MySQL individually.<br />
 * Install Plugin to connect OCS with GLPI.<br />
 <br />
-Si vous rencontrez un problème ou que vous avez une suggestion ou que vous voulez modifier ce script libre à vous de me contacter.<br />
-<br />
 
 # OS compatible :
-| Operating System  | Version | Compatibilité        | Recommandé         | Notes                                |
+| Operating System  | Version | Compatibility        | Recommended        | Notes                                |
 | ----------------- | ------- | -------------------- | ------------------ | ------------------------------------ |
 | Ubuntu            | 20.10   | :heavy_check_mark:   | :heavy_check_mark: |                                      |
 |                   | 20.04   | :heavy_check_mark:   | :heavy_check_mark: |                                      |
 |                   | 18.04   | :heavy_check_mark:   | :yellow_circle:    |                                      |
 | Debian            | 10      | :heavy_check_mark:   | :heavy_check_mark: | Highly recommended                   |
-| CentOS Linux      | 8       |                      |                    | [Convert To CentOS Stream 8](https://www.centos.org/download/)|
+| CentOS Linux      | 8       | May work but         | not recommended    | [Convert To CentOS Stream 8](https://www.centos.org/download/)|
 |                   | 7       | :heavy_check_mark:   | :heavy_check_mark: |                                      |
 | CentOS Stream     | 8       | :question:           |                    | Not tested                           |
 | Fedora            | 33      | :red_circle:         |                    | ToDO                                 |
