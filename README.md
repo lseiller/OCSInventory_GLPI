@@ -10,6 +10,7 @@ Ce que peut faire ce script :<br />
 * Choose Specific Version of OCS.<br />
 * Choose Specific Version of GLPI.<br />
 * Install OCSInventory, GLPI, MySQL individually.<br />
+* Install Plugin to connect OCS with GLPI.<br />
 <br />
 Si vous rencontrez un problème ou que vous avez une suggestion ou que vous voulez modifier ce script libre à vous de me contacter.<br />
 <br />
