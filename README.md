@@ -15,7 +15,7 @@ What can this scipt do ?<br />
 
 # OS compatible :
 | Operating System  | Version | Compatibility        | Recommended        | Notes                                |
-|-------------------|---------|----------------------|--------------------|--------------------------------------|
+|:------------------|:--------|:---------------------|:-------------------|:-------------------------------------|
 | Ubuntu            | 20.10   | :heavy_check_mark:   | :heavy_check_mark: |                                      |
 |                   | 20.04   | :heavy_check_mark:   | :heavy_check_mark: |                                      |
 |                   | 18.04   | :heavy_check_mark:   | :yellow_circle:    |                                      |
