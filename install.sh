@@ -1,6 +1,7 @@
 #!/bin/bash
 OCSVERSION=2.9
 GLPIVERSION=9.5.5
+PLUGINVERSION=1.7.3
 ip4=$(/sbin/ip -o -4 addr list eth0 | awk '{print $4}' | cut -d/ -f1)
 
 output(){
@@ -126,6 +127,7 @@ option_install(){
     output "[5] Choose Version of GLPI"
     output "[6] Reset root MySQL"
     output "[7] Install OCSInventory v${OCSVERSION}, GLPI v${GLPIVERSION}, MySQL individually."
+    output "[8] Ajouter le plugin GLPI/OCSNGv${PLUGINVERSION} dans glpi"
     read choix
     case $choix in
         1 ) optioninstall=1
@@ -147,6 +149,8 @@ option_install(){
         6 ) curl -sSL https://raw.githubusercontent.com/tommytran732/MariaDB-Root-Password-Reset/master/mariadb-104.sh | sudo bash
             ;;
         7 ) optioninstall=4
+            ;;
+        8 ) optioninstall=5
             ;;
         * ) info "Vous n'avez pas choisie d'option."
             option_install
@@ -474,5 +478,12 @@ case $optioninstall in
                 ;;
         esac
         ;;
+    5 ) output "Téléchargement..."
+        cd /tmp
+        wget https://github.com/pluginsGLPI/ocsinventoryng/releases/download/${PLUGINVERSION}/glpi-ocsinventoryng-${PLUGINVERSION}.tar.gz
+        tar -xsf glpi-ocsinventoryng-${PLUGINVERSION}.tar.gz
+        mv -t ocsinventoryng/ /opt/glpi/plugins -f
+        output "Plugin téléchargé et installé"
+        ;;
 esac
-output "Fin du script d'installation."
+output "Fin du script."
