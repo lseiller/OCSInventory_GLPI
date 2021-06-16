@@ -29,4 +29,4 @@ bash install.sh
 |                   | 7       | :heavy_check_mark:   | :heavy_check_mark: |                                      |
 | CentOS Stream     | 8       | :question:           |                    | Not tested                           |
 | Fedora            | 33      | :red_circle:         |                    | ToDO                                 |
-| ----------------- | ------- | -------------------- | -----------------> | Tested under HyperV LXC Bare Metal   |
+| ----------------- | ------- | -------------------- | -----------------> | Tested under HyperV, LXC & Bare Metal |
