@@ -25,8 +25,8 @@ bash install.sh
 |                   | 20.04   | :heavy_check_mark:   | :heavy_check_mark: |                                      |
 |                   | 18.04   | :heavy_check_mark:   | :yellow_circle:    |                                      |
 | Debian            | 10      | :heavy_check_mark:   | :heavy_check_mark: | Highly recommended                   |
-| CentOS Linux      | 8       | May work but         | not recommended    | [Convert To CentOS Stream](https://www.centos.org/download/)|
+| CentOS Linux      | 8       | May work but         | :red_circle:       | [Go To CentOS Stream](https://www.centos.org/download/)|
 |                   | 7       | :heavy_check_mark:   | :heavy_check_mark: |                                      |
 | CentOS Stream     | 8       | :question:           |                    | Not tested                           |
 | Fedora            | 33      | :red_circle:         |                    | ToDO                                 |
-| ---------------- | ------- | -------------------- | -----------------> | Tested under HyperV, LXC and Bare Metal |
+| ----------------- | ------- | -------------------- | -----------------> | Tested under HyperV, LXC & Bare Metal |
