@@ -1,8 +1,5 @@
 #!/bin/bash
-OCSVERSION=2.9
-GLPIVERSION=9.5.5
-PLUGINVERSION=1.7.3
-ip4=$(/sbin/ip -o -4 addr list eth0 | awk '{print $4}' | cut -d/ -f1)
+
 
 output(){
     echo -e '\e[36m'$1'\e[0m';
@@ -15,6 +12,11 @@ warn(){
 info(){
     echo -e '\e[33m'$1'\e[0m';
 }
+
+OCSVERSION=2.9
+GLPIVERSION=9.5.5
+PLUGINVERSION=1.7.3
+ip4=$(/sbin/ip -o -4 addr list eth0 | awk '{print $4}' | cut -d/ -f1)
 
 notsupported(){
         output "Votre système n'est pas compatible"
