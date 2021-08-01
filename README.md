@@ -21,12 +21,12 @@ bash install.sh
 # Supported OS :
 | Operating System  | Version | Compatibility        | Recommended        | Notes                                |
 | ----------------- | ------- | -------------------- | ------------------ | ------------------------------------ |
-| Ubuntu            | 20.10   | :heavy_check_mark:   | :heavy_check_mark: |                                      |
+| Ubuntu            | 21.04   | :heavy_check_mark:   | :heavy_check_mark: |                                      |
 |                   | 20.04   | :heavy_check_mark:   | :heavy_check_mark: |                                      |
 |                   | 18.04   | :heavy_check_mark:   | :yellow_circle:    |                                      |
 | Debian            | 10      | :heavy_check_mark:   | :heavy_check_mark: | **Highly recommended**               |
-| CentOS Linux      | 8       | :heavy_check_mark:   | :red_circle:       | https://www.centos.org/download/     |
-|                   | 7       | :heavy_check_mark:   | :heavy_check_mark: |                                      |
-| CentOS Stream     | 8       | :heavy_check_mark:   | :heavy_check_mark: |                                      |
-| Fedora            | 34      | :heavy_check_mark:   | :heavy_check_mark: |                                      |
-| ----------------- | ------- | -------------------- | -----------------> | Tested under HyperV, LXC & Bare Metal |
+| CentOS Linux      | 8       | :red_circle:         | :red_circle:       | https://www.centos.org/download/     |
+|                   | 7       | :red_circle:         | :red_circle:       | All CentOS won't work, I will fix it |
+| CentOS Stream     | 8       | :red_circle:         | :red_circle:       | later.                               |
+| Fedora            | 34      | :yellow_circle:      | :heavy_check_mark: | OCS Install is working but not GLPI  |
+| ----------------- | ------- | -------------------- | -----------------> | Tested under KVM, LXC & Bare Metal   |

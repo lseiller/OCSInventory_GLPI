@@ -163,6 +163,19 @@ repositories_setup(){
         apt -y upgrade
     elif [ "$lsb_dist" = "fedora" ]; then
         dnf -y install https://rpm.ocsinventory-ng.org/ocsinventory-release-latest.fc31.ocs.noarch.rpm
+    elif [ "$lsb_dist" = "centos" ]; then
+        if [ "$dist_version" = "7" ]; then
+            yum -y install wget
+            wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+            wget https://rpms.remirepo.net/enterprise/remi-release-7.rpm
+            wget https://rpm.ocsinventory-ng.org/ocsinventory-release-latest.el7.ocs.noarch.rpm
+            yum -y install ocsinventory-release-latest.el7.ocs.noarch.rpm epel-release-latest-7.noarch.rpm remi-release-7.rpm
+        else
+            wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+            wget https://rpms.remirepo.net/enterprise/remi-release-8.rpm
+            wget https://rpm.ocsinventory-ng.org/ocsinventory-release-latest.el8.ocs.noarch.rpm
+            dnf -y install ocsinventory-release-latest.el8.ocs.noarch.rpm epel-release-latest-8.noarch.rpm remi-release-8.rpm
+        fi
     fi
 }
 
@@ -176,10 +189,12 @@ common_dependencies(){
         systemctl enable apache2
         systemctl start apache2
     elif [ "$lsb_dist" = "centos" ] || [ "$lsb_dist" = "fedora" ]; then
-        yum -y install httpd
-        yum -y install php php-fpm php-gd php-mbstring php-mysql php-xml php-intl php-ldap php-apcu php-xmlrpc php-zip php-opcache php-sodium
-        yum -y install make unzip
-        yum -y install mariadb-server
+        if [ "$dist_version" = "7" ]; then
+            yum -y install httpd
+            yum -y install php php-fpm php-gd php-mbstring php-xml php-intl php-ldap php-apcu php-xmlrpc php-zip php-opcache php-sodium make unzip mariadb-server php-mysql wget 
+        else
+            dnf -y install php php-fpm php-gd php-mbstring php-xml php-intl php-ldap php-apcu php-xmlrpc php-zip php-opcache php-sodium make unzip mariadb-server wget php-mysqlnd
+        fi
         systemctl enable httpd
         systemctl enable php-fpm
     fi
@@ -188,7 +203,7 @@ common_dependencies(){
 }
 
 msyql_setup(){
-    output "\nSeting up MySQL..."
+    output "\nSetting up MySQL..."
     rootpassword=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`
     Q0="DROP DATABASE IF EXISTS test;"
     Q1="SET old_passwords=0;"
@@ -210,7 +225,7 @@ ocs_dependencies(){
         cpan Compress::Zlib Mojolicious::Lite Plack::Handler YAML XML::Entities Switch
         sudo service apache2 restart
     elif [ "$lsb_dist" = "centos" ] || [ "$lsb_dist" = "fedora" ]; then
-        yum -y install php-soap perl-DBD-MySQL perl-XML-Simple perl-Apache-DBI perl-XML-Entities perl-Apache2-SOAP perl-Mojolicious perl-Plack
+        yum -y install php-soap perl-DBD-MySQL perl-XML-Simple perl-Apache-DBI perl-XML-Entities perl-Apache2-SOAP perl-Mojolicious perl-Plack dnf
         dnf -y install cpan
         cpan Compress::Zlib Net::IP Archive::Zip YAML XML::Entities Switch
         if [ "$lsb_dist" = "fedora" ]; then
@@ -236,7 +251,11 @@ glpi_dependencies(){
     if [ "$lsb_dist" = "ubuntu" ] || [ "$lsb_dist" = "debian" ]; then
         apt install -y php-fileinfo php-simplexml php-cas php-bz2
     elif [ "$lsb_dist" = "centos" ] || [ "$lsb_dist" = "fedora" ]; then
-        yum -y install php-pear-CAS
+        if [ "$dist_version" = "7" ]; then
+            yum -y install php-pear-CAS
+        else
+            dnf -y install php-pear-CAS
+        fi
     fi
 
 }
@@ -307,7 +326,7 @@ glpi_webconfig(){
     if [ "$lsb_dist" = "ubuntu" ] || [ "$lsb_dist" = "debian" ]; then
         glpiconf=/etc/apache2/conf-available/glpi.conf
     elif [ "$lsb_dist" = "centos" ] || [ "$lsb_dist" = "fedora" ]; then
-        glpiconf=/etc/httpd/conf/glpi.conf
+        glpiconf=/etc/httpd/conf.d/glpi.conf
     fi
     cat << EOF > $glpiconf
 Alias /glpi /opt/glpi
@@ -323,13 +342,16 @@ EOF
         cp /etc/apache2/conf-available/glpi.conf /etc/apache2/sites-enabled/
         service apache2 restart
     elif [ "$lsb_dist" = "centos" ] || [ "$lsb_dist" = "fedora" ]; then
+        chown -R apache.apache /opt/glpi/files
+        chown -R apache.apache /opt/glpi/config
         service httpd restart
     fi
+    #chmod 775 /opt/glpi -R
 }
 
 ocs_mysql(){
     output "\nMaking DataBase for OCS..."
-    ocs_password=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 12 | head -n 1`
+    ocs_password=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`
     Q0="CREATE DATABASE IF NOT EXISTS ocsweb;"
     Q1="CREATE USER 'ocs'@'localhost';"
     Q2="ALTER USER 'ocs'@'localhost' IDENTIFIED BY '$ocs_password';"
@@ -343,9 +365,11 @@ glpi_mysql(){
     output "\nMaking DataBase for GLPI..."
     glpi_password=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`
     Q0="CREATE DATABASE IF NOT EXISTS glpi;"
-    Q1="GRANT ALL ON glpi.* TO 'glpi'@'127.0.0.1' IDENTIFIED BY '$glpi_password';"
-    Q2="FLUSH PRIVILEGES;"
-    SQL="${Q0}${Q1}${Q2}"
+    Q1="CREATE USER 'glpi'@'localhost';"
+    Q2="ALTER USER 'glpi'@'localhost' IDENTIFIED BY '$glpi_password';"
+    Q3="GRANT ALL PRIVILEGES ON glpi.* TO 'glpi'@'localhost';"
+    Q4="FLUSH PRIVILEGES;"
+    SQL="${Q0}${Q1}${Q2}${Q3}${Q4}"
     sudo mysql -u root -e "$SQL" -p$rootpassword
 }
 
