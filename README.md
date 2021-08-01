@@ -4,13 +4,14 @@ Install OCSInventory, GLPI, MariaDB and OCS/GLPI plugin. <br />
 This script must be run as **root**. It is also **hightly recommended** to use this script on a **fresh** installation.<br />
 <br />
 What can this script do ?<br />
-* Install OCSInventory with MySQL.<br />
-* Install GLPI with MySQL.<br />
-* Install GLPI + OCSInventory with MySQL.<br />
-* Choose Specific Version of OCS.<br />
-* Choose Specific Version of GLPI.<br />
-* Install OCSInventory, GLPI, MySQL individually.<br />
-* Install Plugin to connect OCS with GLPI.<br />
+* Install OCSInventory (+ MySQL).<br />
+* Install GLPI (+ MySQL).<br />
+* Install GLPI + OCSInventory (+ MySQL).<br />
+* Install MySQL for GLPI and/or OCS.<br />
+* Choose a Specific Version of OCS.<br />
+* Choose a Specific Version of GLPI.<br />
+* Reset root password of MySQL.<br />
+* Add the Plugin to connect OCS with GLPI.<br />
 
 # Download and use :
 ```shell
