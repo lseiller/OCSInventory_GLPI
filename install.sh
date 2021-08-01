@@ -329,12 +329,13 @@ EOF
 
 ocs_mysql(){
     output "\nMaking DataBase for OCS..."
-    ocs_password=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1`
+    ocs_password=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 12 | head -n 1`
     Q0="CREATE DATABASE IF NOT EXISTS ocsweb;"
-    Q1="CREATE USER 'ocs'@'localhost' IDENTIFIED BY '$ocs_password';"
-    Q2="GRANT ALL PRIVILEGES ON ocsweb.* TO 'ocs'@'127.0.0.1';"
-    Q3="FLUSH PRIVILEGES;"
-    SQL="${Q0}${Q1}${Q2}${Q3}"
+    Q1="CREATE USER 'ocs'@'localhost';"
+    Q2="ALTER USER 'ocs'@'localhost' IDENTIFIED BY '$ocs_password';"
+    Q3="GRANT ALL PRIVILEGES ON ocsweb.* TO 'ocs'@'localhost';"
+    Q4="FLUSH PRIVILEGES;"
+    SQL="${Q0}${Q1}${Q2}${Q3}${Q4}"
     sudo mysql -u root -e "$SQL" -p$rootpassword
 }
 
@@ -374,7 +375,7 @@ broadcast_sql(){
 broadcast_ocs(){
     output "###############################################################"
     output "OCS DataBase :"
-    output "Host: 127.0.0.1"
+    output "Host: localhost"
     output "Port: 3306"
     output "User: ocs"
     output "Name: ocsweb"
