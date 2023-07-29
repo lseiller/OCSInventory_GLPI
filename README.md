@@ -1,3 +1,7 @@
+## This repo is not maintained, the script was made to automate a process I had to do during a high school internship.
+I had done it to train myself in bash scripting, I was absolutely not competent enough in shell to write a script in an "optimal" way (i.e. readable, using intelligently the bash functionalities, managing several distributions and knowledge in each of them, etc).
+I don't recommend using this script.
+
 # OCSInventory/GLPI-Script
 Install OCSInventory, GLPI, MariaDB and OCS/GLPI plugin. <br />
 <br />
