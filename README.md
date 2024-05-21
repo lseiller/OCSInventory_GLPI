@@ -17,9 +17,8 @@ What can this script do ?<br />
 * Reset root password of MySQL.<br />
 * Add the Plugin to connect OCS with GLPI.<br />
 
-# Download and use :
+# Use :
 ```shell
-wget https://raw.githubusercontent.com/Lowan-S/OCSInventory_GLPI/main/install.sh
 bash install.sh
 ```
 
